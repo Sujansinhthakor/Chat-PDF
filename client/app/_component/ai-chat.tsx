@@ -13,19 +13,15 @@ export interface Chat {
 const AI_Chat = () => {
     const [chats, setChats] = useState<Chat[]>([]);
 
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         setChats(prev => [...prev, { text: "Hey There how are doing?", type: 'bot' }]);
-    //     }, 3000)
-    // }, [])
-
-    return <>
-        <div className=" h-[80%]">
-            <Chats chats={chats}></Chats>
+    return (
+        <div className="flex flex-col h-screen pt-5">
+            <div className="flex-1 overflow-y-auto no-scrollbar">
+                <Chats chats={chats} />
+            </div>
+            <div className="h-[20vh]">
+                <InputArea setChats={setChats} chats={chats} />
+            </div>
         </div>
-        <div className=" h-[20%]">
-            <InputArea setChats={setChats} chats={chats} />
-        </div>
-    </>
+    );
 }
 export default AI_Chat;

@@ -1,7 +1,7 @@
 import { cn } from "../../lib/utils";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { motion } from "motion/react";
-import { IconUpload } from "@tabler/icons-react";
+import { IconUpload, IconX } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
 
 const mainVariant = {
@@ -26,16 +26,23 @@ const secondaryVariant = {
 };
 
 export const FileUpload = ({
+  files,
   onChange,
 }: {
-  onChange?: (files: File[]) => void;
+  files: File[];
+  onChange: (files: File[]) => void;
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
+    onChange([...files, ...newFiles]);
+  };
+
+  const removeFile = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newFiles = [...files];
+    newFiles.splice(idx, 1);
+    onChange(newFiles);
   };
 
   const handleClick = () => {
@@ -43,7 +50,7 @@ export const FileUpload = ({
   };
 
   const { getRootProps, isDragActive } = useDropzone({
-    multiple: false,
+    multiple: true,
     noClick: true,
     onDrop: handleFileChange,
     onDropRejected: (error) => {
@@ -62,6 +69,7 @@ export const FileUpload = ({
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
+          multiple
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
           accept=".pdf,application/pdf"
@@ -96,14 +104,23 @@ export const FileUpload = ({
                     >
                       {file.name}
                     </motion.p>
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      layout
-                      className="rounded-lg px-2 py-1 w-fit shrink-0 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white shadow-input"
-                    >
-                      {(file.size / (1024 * 1024)).toFixed(2)} MB
-                    </motion.p>
+                    <div className="flex gap-2 items-center">
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        layout
+                        className="rounded-lg px-2 py-1 w-fit shrink-0 text-sm text-neutral-600 dark:bg-neutral-800 dark:text-white shadow-input"
+                      >
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      </motion.p>
+                      <button
+                        onClick={(e) => removeFile(idx, e)}
+                        className="p-1 rounded-md text-red-500 hover:bg-red-500/20 transition-colors"
+                        aria-label="Remove file"
+                      >
+                        <IconX size={18} />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex text-sm md:flex-row flex-col items-start md:items-center w-full mt-2 justify-between text-neutral-600 dark:text-neutral-400">

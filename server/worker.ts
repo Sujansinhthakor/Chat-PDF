@@ -35,7 +35,7 @@ const worker = new Worker('pdf-upload-queue', async job => {
 
         const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
             url: apiKey_qdrant,
-            collectionName: "langchainjs-testing",
+            collectionName: data.filename,
         });
         await vectorStore.addDocuments(chunks);
 
